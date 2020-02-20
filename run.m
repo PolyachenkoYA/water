@@ -26,10 +26,10 @@ u(:, :, 1) = u(:, :, 2) + g * dt/dx * (circshift(h(:, :, 2), [0, 0, 1]) - h(:, :
 v(:, :, 1) = v(:, :, 2) + g * dt/dy * (circshift(h(:, :, 2), [0, -1, 0]) - h(:, :, 2));
 h(:, :, 1) = h(:, :, 2) + H * ((circshift(u(:, :, 2), [0, 0, 1]) - u(:, :, 2)) * dt/dx + ...
                                (circshift(v(:, :, 2), [0, -1, 0]) - v(:, :, 2)) * dt/dy);
-getFig('x', 'y', 'h(x,y)', '', '', '', 'h');
-legend off;
-hold off;
+[fig, ax, leg] = getFig('x', 'y', 'h(x,y)', '', '', '', 'h');
+legend(ax, 'off');
 view(-37.5, 30);
+srf = draw_surf(ax, X, Y, squeeze(h(:, :, 2)));
 for it = 2:Nt
     buf = u(:, :, 1) - g * dt/dx * (circshift(h(:, :, 2), [0, 0, 1]) - circshift(h(:, :, 2), [0, 0, -1]));
     u(:, :, 1) = u(:, :, 2);
@@ -45,11 +45,16 @@ for it = 2:Nt
     h(:, :, 2) = buf;
     
     if(mod(it, 10) == 0)
-        surf(X, Y, squeeze(h(:, :, 2)), ...
-            'EdgeColor', 'interp', 'FaceColor', 'interp', 'HandleVisibility', 'off');
-        zlim([-1, 1]);
+        delete(srf);
+        srf = draw_surf(ax, X, Y, squeeze(h(:, :, 2)));
         pause(0.01);
     end    
     disp(it / Nt);
+end
+
+function srf = draw_surf(ax, X, Y, h)
+    srf = surf(ax, X, Y, h, ...
+        'EdgeColor', 'interp', 'FaceColor', 'interp');
+    zlim([-1, 1]);
 end
 
