@@ -3,7 +3,7 @@ clear; close all;
 H = 1;
 g = 1;
 l = 2*pi;
-N = 50;
+N = 100;
 T = 50;
 dt = 0.001;
 
@@ -11,50 +11,45 @@ Nt = T/dt;
 dx = l/N;
 dy = l/N;
 %        (t     , y, x)
-u = zeros(N, N, 2);
-v = zeros(N, N, 2);
-h = zeros(N, N, 2);
+u = zeros(N, N);
+v = zeros(N, N);
+%h = zeros(N, N);
+%u_prev = zeros(N, N);
+%v_prev = zeros(N, N);
+%h_prev = zeros(N, N);
 buf = zeros(N, N);
 [Y, X] = meshgrid((1:N) * dy, (1:N) * dx);
 
-u(:, :, 2) = 0;
-v(:, :, 2) = 0;
-h(:, :, 2) = exp(-(((X - 1) / 1).^2 + ((Y - 2) / 1).^2)) .* (Y - dy) .* (X - dx) .* (l - Y) .* (l - X);
-h(:, :, 2) = h(:, :, 2) / max(max(h(:, :, 2)));
+u(:) = 0;
+v(:) = exp(-(((X - 2) / 2).^2 + ((Y - 2) / 1).^2)) .* (Y - dy) .* (X - dx) .* (l - Y) .* (l - X);
+h = exp(-(((X - 1) / 2).^2 + ((Y - 2) / 1).^2)) .* (Y - dy) .* (X - dx) .* (l - Y) .* (l - X);
+h = h / max(max(h));
+v = v / max(max(v)) * 2;
 
-u(:, :, 1) = u(:, :, 2) + g * dt/dx * (circshift(h(:, :, 2), [0, 0, 1]) - h(:, :, 2));
-v(:, :, 1) = v(:, :, 2) + g * dt/dy * (circshift(h(:, :, 2), [0, -1, 0]) - h(:, :, 2));
-h(:, :, 1) = h(:, :, 2) + H * ((circshift(u(:, :, 2), [0, 0, 1]) - u(:, :, 2)) * dt/dx + ...
-                               (circshift(v(:, :, 2), [0, -1, 0]) - v(:, :, 2)) * dt/dy);
+u_prev = u + (g * dt) * diff_fwd(h, [0, 1], dx);
+v_prev = v + (g * dt) * diff_fwd(h, [-1, 0], dy);
+h_prev = h + (H * dt) * (diff_fwd(u, [0, 1], dx) + diff_fwd(v, [-1, 0], dy));
+
 [fig, ax, leg] = getFig('x', 'y', 'h(x,y)', '', '', '', 'h');
 legend(ax, 'off');
 view(-37.5, 30);
-srf = draw_surf(ax, X, Y, squeeze(h(:, :, 2)));
-for it = 2:Nt
-    buf = u(:, :, 1) - g * dt/dx * (circshift(h(:, :, 2), [0, 0, 1]) - circshift(h(:, :, 2), [0, 0, -1]));
-    u(:, :, 1) = u(:, :, 2);
-    u(:, :, 2) = buf; 
+srf = draw_surf(ax, X, Y, h);
+for i_t = 2:Nt
+    u_prev = u_prev - (g * dt) * diff_center(h, [0, 1], dx);
+    v_prev = v_prev - (g * dt) * diff_center(h, [-1, 0], dy);
+    h_prev = h_prev - (H * dt) * (diff_center(u, [0, 1], dx) + diff_center(v, [-1, 0], dy));
     
-    buf = v(:, :, 1) - g * dt/dy * (circshift(h(:, :, 2), [0, -1, 0]) - circshift(h(:, :, 2), [0, 1, 0]));
-    v(:, :, 1) = v(:, :, 2);
-    v(:, :, 2) = buf;
+    % this might be inefficient because swap will allocate NxN array every
+    % time
+    [u_prev, u] = swap(u_prev, u);
+    [v_prev, v] = swap(v_prev, v);
+    [h_prev, h] = swap(h_prev, h);
     
-    buf = h(:, :, 1) - H * ((circshift(u(:, :, 2), [0, 0, 1]) - circshift(u(:, :, 2), [0, 0, -1])) * dt/dx + ...
-                            (circshift(v(:, :, 2), [0, -1, 0]) - circshift(v(:, :, 2), [0, 1, 0])) * dt/dy);
-    h(:, :, 1) = h(:, :, 2);
-    h(:, :, 2) = buf;
-    
-    if(mod(it, 10) == 0)
+    if(mod(i_t, 10) == 0)
         delete(srf);
-        srf = draw_surf(ax, X, Y, squeeze(h(:, :, 2)));
-        pause(0.01);
+        srf = draw_surf(ax, X, Y, h);
+        pause(0.001);
     end    
-    disp(it / Nt);
-end
-
-function srf = draw_surf(ax, X, Y, h)
-    srf = surf(ax, X, Y, h, ...
-        'EdgeColor', 'interp', 'FaceColor', 'interp');
-    zlim([-1, 1]);
+    disp(i_t / Nt);
 end
 
