@@ -6,7 +6,7 @@ g = 1;
 l = 2*pi;
 N = 100;
 v0 = sqrt(g * H);
-T = 10;
+T = 100;
 dt = 0.01;
 
 T_period = 2*pi / v0;
@@ -29,7 +29,9 @@ else
 end
 
 %% =============== evolve =================
-[h, u, v, err] = evol_sys_to_T(g, H, T, dt, h, u, v, X, Y, @th_solution, ax);
+[h, u, v, err] = evol_sys_to_T(g, H, T, dt, h, u, v, X, Y,...
+                               @th_solution,...
+                               ax, ['dt = ' num2str(dt) '; dx = ' num2str(dx)]);
 
 if(draw_err)
     getFig('t', '$< r^2 >$', 'err(t)', 'log', 'log');

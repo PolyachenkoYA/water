@@ -1,4 +1,4 @@
-function [h, u, v, err] = evol_sys_to_T(g, H, T, dt, h, u, v, X, Y, th_solution, sol_ax)
+function [h, u, v, err] = evol_sys_to_T(g, H, T, dt, h, u, v, X, Y, th_solution, sol_ax, prefix)
     if(exist('sol_ax', 'var'))
         draw_evol = ~isempty(sol_ax);
     else
@@ -16,9 +16,9 @@ function [h, u, v, err] = evol_sys_to_T(g, H, T, dt, h, u, v, X, Y, th_solution,
     u_prev = u;
     v_prev = v;
     h_prev = h;
-    u = u_prev - (g * dt) * diff_fwd(h_prev, [0, 1], dx);
-    v = v_prev - (g * dt) * diff_fwd(h_prev, [-1, 0], dy);
-    h = h_prev - (H * dt) * (diff_fwd(u_prev, [0, 1], dx) + diff_fwd(v_prev, [-1, 0], dy));
+    u = u_prev - (g * dt) * diff_fwd_periodic(h_prev, [0, 1], dx);
+    v = v_prev - (g * dt) * diff_fwd_periodic(h_prev, [-1, 0], dy);
+    h = h_prev - (H * dt) * (diff_fwd_periodic(u_prev, [0, 1], dx) + diff_fwd_periodic(v_prev, [-1, 0], dy));
     h_th = th_solution(X, Y, 1 * dt * v0);
     err(1) = sum(sum((h - h_th).^2)) / N^2;
     
@@ -34,9 +34,9 @@ function [h, u, v, err] = evol_sys_to_T(g, H, T, dt, h, u, v, X, Y, th_solution,
     end
 
     for i_t = 2:Nt
-        u_prev = u_prev - (g * dt) * diff_center(h, [0, 1], dx);
-        v_prev = v_prev - (g * dt) * diff_center(h, [-1, 0], dy);
-        h_prev = h_prev - (H * dt) * (diff_center(u, [0, 1], dx) + diff_center(v, [-1, 0], dy));
+        u_prev = u_prev - (g * dt) * diff_center_periodic(h, [0, 1], dx);
+        v_prev = v_prev - (g * dt) * diff_center_periodic(h, [-1, 0], dy);
+        h_prev = h_prev - (H * dt) * (diff_center_periodic(u, [0, 1], dx) + diff_center_periodic(v, [-1, 0], dy));
 
         % this might be inefficient because swap will allocate NxN array every
         % time
@@ -47,7 +47,7 @@ function [h, u, v, err] = evol_sys_to_T(g, H, T, dt, h, u, v, X, Y, th_solution,
         h_th = th_solution(X, Y, i_t * dt * v0);
         err(i_t) = sum(sum((h - h_th).^2)) / N^2;
 
-        if(mod(i_t, 1000) == 0)
+        if(mod(i_t, 10) == 0)
             if(draw_evol)
                 delete(srf);
                 delete(srf_th);
@@ -60,7 +60,7 @@ function [h, u, v, err] = evol_sys_to_T(g, H, T, dt, h, u, v, X, Y, th_solution,
                 caxis([-hmax, hmax]);
                 pause(0.001);
             end    
-            disp(i_t / Nt);
+            disp([prefix ' ' num2str(i_t / Nt)]);
         end        
     end
 end
