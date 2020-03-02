@@ -29,8 +29,8 @@ function [h, u, v, err] = evol_sys_to_T_2(g, H, T, dt, h, u, v, X, Y, step_fwd, 
                 'EdgeColor', 'interp', 'FaceColor', 'interp', 'DisplayName', 'theory',...
                 'FaceAlpha', 0.5, 'EdgeAlpha', 0.5);
         end
-        %zlim([-hmax, hmax]);
-        %caxis([-hmax, hmax]);  
+        zlim([-hmax, hmax]);
+        caxis([-hmax, hmax]);  
         input('press any key to start');
     end
 
@@ -58,8 +58,8 @@ function [h, u, v, err] = evol_sys_to_T_2(g, H, T, dt, h, u, v, X, Y, step_fwd, 
                 end
                 srf = surf(sol_ax, X, Y, h,...
                     'EdgeColor', 'interp', 'FaceColor', 'interp', 'DisplayName', 'numerical');
-                %zlim([-hmax, hmax]);
-                %caxis([-hmax, hmax]);
+                zlim([-hmax, hmax]);
+                caxis([-hmax, hmax]);
                 pause(0.001);
             end    
             disp([prefix '; progeess ' num2str(i_t / Nt)]);
