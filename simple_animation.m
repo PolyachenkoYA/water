@@ -7,7 +7,7 @@ l = 2*pi;
 N = 100;
 v0 = sqrt(g * H);
 T = 100;
-dt = 0.01;
+dt = 0.001;
 
 T_period = 2*pi / v0;
 Nt = round(T/dt);
@@ -29,9 +29,16 @@ else
 end
 
 %% =============== evolve =================
-[h, u, v, err] = evol_sys_to_T(g, H, T, dt, h, u, v, X, Y,...
-                               @th_solution,...
-                               ax, ['dt = ' num2str(dt) '; dx = ' num2str(dx)]);
+%[h, u, v, err] = evol_sys_to_T_1(g, H, T, dt, h, u, v, X, Y,...
+%                    @diff_fwd_walls, @th_solution,...
+%                    ax, ['dt = ' num2str(dt) '; dx = ' num2str(dx)]);
+[h, u, v, err] = evol_sys_to_T_2(g, H, T, dt, h, u, v, X, Y,...
+                    @step_fwd_walls, @step_center_walls, @th_solution,...
+                    ax, ['dt = ' num2str(dt) '; dx = ' num2str(dx)]);
+%[h, u, v, err] = evol_sys_to_T_2(g, H, T, dt, h, u, v, X, Y,...
+%                    @step_fwd_periodic, @step_center_periodic, @th_solution,...
+%                    ax, ['dt = ' num2str(dt) '; dx = ' num2str(dx)]);
+
 
 if(draw_err)
     getFig('t', '$< r^2 >$', 'err(t)', 'log', 'log');
