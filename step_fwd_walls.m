@@ -1,15 +1,18 @@
-function [u, v, h] = step_fwd_walls(g, H, u_prev, v_prev, h_prev, dx, dy, dt)
-    du = -(g * dt) * diff_center_periodic(h_prev, [0, 1], dx);
-    dv = -(g * dt) * diff_center_periodic(h_prev, [1, 0], dy);
-    dh = -(H * dt) * (diff_center_periodic(u_prev, [0, 1], dx) + ...
-                      diff_center_periodic(v_prev, [1, 0], dy)); % wors OK
-    dh(1, :) = 0; dh(end, :) = 0;
-    dh(:, 1) = 0; dh(:, end) = 0;
+function [u_next, v_next, h_next] = step_fwd_walls(g, H, u_curr, v_curr, h_curr, dx, dy, dt)
+    du = -(g * dt) * diff_center_periodic(h_curr, [0, 1], dx);
+    du(:, 1) = 0; du(:, end) = 0;        
+    dv = -(g * dt) * diff_center_periodic(h_curr, [1, 0], dy);                      
+    dv(1, :) = 0; dv(end, :) = 0;
     
-    u = u_prev + du;
-    v = v_prev + dv;
-    h = h_prev + dh;    
+    dhx = diff_center_periodic(u_curr, [0, 1], dx);
+    dhx(:, 1) = 0; dhx(:, end) = 0;    
+    dhy = diff_center_periodic(v_curr, [1, 0], dy);
+    dhy(1, :) = 0; dhy(end, :) = 0;        
+    dh = -(H * dt) * (dhx + dhy); % wors OK    
     
-    u(:, 1) = 0; u(:, end) = 0;
-    v(1, :) = 0; v(end, :) = 0;
+    u_next = u_curr + du;
+    v_next = v_curr + dv;
+    h_next = h_curr + dh;        
+    u_next(:, 1) = 0; u_next(:, end) = 0;
+    v_next(1, :) = 0; v_next(end, :) = 0;    
 end
