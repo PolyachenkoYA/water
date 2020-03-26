@@ -36,7 +36,7 @@ function [h, u, v, err] = evol_sys_to_T_2(g, H, T, dt, h, u, v, X, Y, step_fwd, 
 
     for i_t = 2:Nt
         [u_prev, v_prev, h_prev] = ...
-            step_center(g, H, u_prev, v_prev, h_prev, dx, dy, dt);
+            step_center(g, H, u_prev, v_prev, h_prev, u, v, h, dx, dy, dt);
 
         % this might be inefficient because swap will allocate NxN array every
         % time
