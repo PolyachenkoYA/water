@@ -4,7 +4,7 @@ function [h, u, v] = get_init_state(X, Y)
     dx = abs(X(1,1) - X(2,2));
     l = abs(X(1,1) - X(end, end)) * (N / (N - 1));
     
-    switch(1)
+    switch(2)
         case 1
             u = zeros(N, N);
             v = exp(-(((X - 2) / 2).^2 + ((Y - 2) / 1).^2)) .* (Y - dy) .* (X - dx) .* (l - Y) .* (l - X);

@@ -47,7 +47,7 @@ function [h, u, v, err] = evol_sys_to_T_2(g, H, T, dt, h, u, v, X, Y, step_fwd, 
         h_th = th_solution(X, Y, i_t * dt * v0);
         err(i_t) = sum(sum((h - h_th).^2)) / N^2;
 
-        if(mod(i_t, 10) == 0)
+        if(mod(i_t, 1000) == 0)
             if(draw_evol)
                 delete(srf);
                 if(draw_th)

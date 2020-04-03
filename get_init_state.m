@@ -19,7 +19,7 @@ function [h, u, v] = get_init_state(Nx, dx, Ny, dy, mode)
             
             h = h / max(max(h));
             v = v / max(max(v)) / 2;
-            u = u / max(max(v)) / 3;
+            u = u / max(max(u)) / 3;
         case 2
             h = cos(Xh * (2*pi / lx)) + cos(Yh * 2 * (2*pi / ly)); % h(t,x,y) = cos(x) * cos(t * v0) + cos(2y) * cos(2t * v0);
     end

@@ -5,7 +5,7 @@ H = 1;
 g = 1;
 lx = 2*pi;
 ly = 2*pi;
-N = 200;
+N = 100;
 v0 = sqrt(g * H);
 T = 100;
 dt = 0.001;
@@ -16,7 +16,7 @@ dx = lx / N;
 dy = ly / N;
 [Y, X] = meshgrid((1:N) * dy, (1:N) * dx);
 
-draw_evol = 1;
+draw_evol = 0;
 draw_err = 1;
 
 %% =============== init state ===============
