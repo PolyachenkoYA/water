@@ -13,6 +13,6 @@ function [u_next, v_next, h_next] = step_fwd_walls(g, H, u_curr, v_curr, h_curr,
     u_next = u_curr + du;
     v_next = v_curr + dv;
     h_next = h_curr + dh;        
-    u_next(:, 1) = 0; u_next(:, end) = 0;
-    v_next(1, :) = 0; v_next(end, :) = 0;    
+    %u_next(:, 1) = 0; u_next(:, end) = 0;
+    %v_next(1, :) = 0; v_next(end, :) = 0;    
 end

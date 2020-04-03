@@ -13,6 +13,6 @@ function [u_next, v_next, h_next] = step_center_walls(g, H, u_prev, v_prev, h_pr
     u_next = u_prev + du;
     v_next = v_prev + dv;
     h_next = h_prev + dh;   
-    u_next(:, 1) = 0; u_next(:, end) = 0;
-    v_next(1, :) = 0; u_next(end, :) = 0;        
+    %u_next(:, 1) = 0; u_next(:, end) = 0;
+    %v_next(1, :) = 0; u_next(end, :) = 0;        
 end
