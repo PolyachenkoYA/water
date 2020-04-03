@@ -3,23 +3,24 @@ clear; close all;
 %% ============== init params =============
 H = 1;
 g = 1;
-l = 2*pi;
-N = 200;
 v0 = sqrt(g * H);
-T = 100;
-dt = 0.001;
-
 T_period = 2*pi / v0;
-Nt = round(T/dt);
-dx = l/N;
-dy = l/N;
-[Y, X] = meshgrid((1:N) * dy, (1:N) * dx);
+Nx = 100;
+Ny = 100;
+dx = 2 * pi / Nx;
+dy = 2 * pi / Ny;
+dt = dx / v0 / 2 / 100;
+Nt = round(2.5 * T_period / dt) + 1;
 
-draw_evol = 1;
+T = Nt * dt;
+lx = dx * Nx;
+ly = dy * Ny;
+
+draw_evol = 0;
 draw_err = 1;
 
 %% =============== init state ===============
-[h, u, v] = get_init_state(X, Y);
+[h, u, v] = get_init_state(Nx, dx, Ny, dy, 2);
 
 if(draw_evol)
     [fig, ax, leg] = getFig('x', 'y', 'h(x,y)', '', '', '', 'h');
@@ -29,15 +30,17 @@ else
 end
 
 %% =============== evolve =================
-[h, u, v, err] = evol_sys_to_T_2(g, H, T, dt, h, u, v, X, Y,...
-                    @step_fwd_walls, @step_center_walls, @th_solution,...
-                    ax, ['dt = ' num2str(dt) '; dx = ' num2str(dx)]); % works OK for diff_periodic
-%[h, u, v, err] = evol_sys_to_T_2(g, H, T, dt, h, u, v, X, Y,...
-%                    @step_fwd_periodic, @step_center_periodic, @th_solution,...
-%                    ax, ['dt = ' num2str(dt) '; dx = ' num2str(dx)]); % works OK for diff_periodic
-
-
 if(draw_err)
+    [h, u, v, err] = evol_sys_to_T(g, H, u, v, h, Nt, dt, dx, dy,...
+                        @step_fwd_walls, ['dt = ' num2str(dt) '; dx = ' num2str(dx)],...
+                        ax, @th_cos_solution);
+else
+    [h, u, v, err] = evol_sys_to_T(g, H, u, v, h, Nt, dt, dx, dy,...
+                        @step_fwd_walls, ['dt = ' num2str(dt) '; dx = ' num2str(dx)],...
+                        ax);    
+end
+
+if(any(err ~= 0))
     getFig('t', '$< r^2 >$', 'err(t)', 'log', 'log');
     plot((1:Nt)*dt, err, 'DisplayName', 'error');
     plot([1, 1] * T_period, [1e-5, max(err) / 2], 'DisplayName', 'period');
