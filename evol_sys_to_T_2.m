@@ -1,6 +1,6 @@
 function [h_curr, u_curr, v_curr, err] = ...
     evol_sys_to_T_2(g, H, u_prev, v_prev, h_prev, Nt, dt, dx, dy,...
-                  step_fwd, step_center, prefix, ax_h, ax_v, th_solution)
+                  step_fwd, step_center, prefix, ax_h, ax_v, ax_dh, th_solution)
     if(exist('ax_h', 'var'))
         draw_evol = ~isempty(ax_h);
     else
@@ -20,10 +20,11 @@ function [h_curr, u_curr, v_curr, err] = ...
         err(1) = sum(sum((h_curr - h_th).^2)) / (Nx * Ny);            
     else
         h_th = [];
+        ax_dh = [];
     end    
     
     if(draw_evol)
-        [srf, srf_th, v_fld] = draw_surf(ax_h, ax_v, Nx, dx, Ny, dy,...
+        [srf, v_fld, srf_dh, srf_th, vth_fld] = draw_surf(ax_h, ax_v, ax_dh, Nx, dx, Ny, dy,...
                                          u_curr, v_curr, h_curr, hmax, h_th);
         input('press any key to start');
     end
@@ -43,8 +44,10 @@ function [h_curr, u_curr, v_curr, err] = ...
                 delete(srf);
                 delete(srf_th);
                 delete(v_fld);
-                [srf, srf_th, v_fld] = ...
-                    draw_surf(ax_h, ax_v, Nx, dx, Ny, dy,...
+                delete(vth_fld);
+                delete(srf_dh);
+                [srf, v_fld, srf_dh, srf_th, vth_fld] = ...
+                    draw_surf(ax_h, ax_v, ax_dh, Nx, dx, Ny, dy,...
                               u_curr, v_curr, h_curr, hmax, h_th);
                 pause(0.001);
                 %input('press any key');

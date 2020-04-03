@@ -27,6 +27,11 @@ if(draw_evol)
     [fig_h, ax_h, leg_h] = getFig('x', 'y', 'h(x,y)', '', '', '', 'h');
     view(-37.5, 30);    
     
+    if(draw_err)
+        [fig_dh, ax_dh, leg_dh] = getFig('x', 'y', 'dh(x,y)', '', '', '', 'dh');
+        view(-37.5, 30);        
+    end
+    
     [fig_v, ax_v, leg_v] = getFig('x', 'y', '$\vec{v}(x,y)$');
 else
     ax_h = [];
@@ -41,7 +46,7 @@ if(draw_err)
 %                         ax_h, ax_v, @th_cos_solution);
     [h, u, v, err] = evol_sys_to_T_2(g, H, u, v, h, Nt, dt, dx, dy,...
                         @step_fwd_walls, @step_center_walls, lbl,...
-                        ax_h, ax_v, @th_cos_solution);
+                        ax_h, ax_v, ax_dh, @th_cos_solution);
 else
 %    [h, u, v, err] = evol_sys_to_T_1(g, H, u, v, h, Nt, dt, dx, dy,...
 %                        @step_fwd_walls, lbl,...
