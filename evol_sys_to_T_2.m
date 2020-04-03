@@ -17,7 +17,7 @@ function [h_curr, u_curr, v_curr, err] = ...
     [u_curr, v_curr, h_curr] = step_fwd(g, H, u_prev, v_prev, h_prev, dx, dy, dt);
     if(draw_th)
         h_th = th_solution(Xh, Yh, 1 * dt * v0);
-        err(1) = sum(sum((h_curr - h_th).^2)) / (Nx * Ny);            
+        err(1) = sqrt(sum(sum((h_curr - h_th).^2)) / (Nx * Ny));
     else
         h_th = [];
         ax_dh = [];

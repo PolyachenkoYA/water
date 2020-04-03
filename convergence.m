@@ -42,15 +42,8 @@ else
         %dt = 1e-3;
         %parfor N_i = 1:N_dx
         for dx_i = 1:N_dx
-            if(draw_evol)
-                [fig_h, ax_h, leg_h] = getFig('x', 'y', 'h(x,y)', '', '', '', 'h');
-                view(-37.5, 30);    
-
-                [fig_v, ax_v, leg_v] = getFig('x', 'y', '$\vec{v}(x,y)$');
-            else
-                ax_h = [];
-                ax_v = [];
-            end
+            [fig_h, ax_h, leg_h, fig_v, ax_v, leg_v, fig_dh, ax_dh, leg_dh] = ...
+                getInitFigs(draw_evol, draw_err);
             disp(['N_i proc: ' num2str(dx_i/N_dx)]);
             dx = dx_arr(dx_i);
             dy = dx;
@@ -61,15 +54,11 @@ else
             [~, ~, ~, err] = ...
                 evol_sys_to_T_2(g, H, u, v, h,...
                               round(T/dt) + 1, dt, dx, dy,...
-                              @step_fwd_walls, @step_center_walls, lbl, ax_h, ax_v,...
+                              @step_fwd_walls, @step_center_walls, lbl, ax_h, ax_v, ax_dh,...
                               @th_cos_solution);
             
             err_dx(dx_i) = err(end);
             disp([lbl ' : err = ' num2str(err_dx(dx_i))]);
-            if(draw_evol)
-                close(fig_h);
-                close(fig_v);
-            end
             if(draw_err)
                 getFig('t', '$\langle r \rangle$', ['$err(t) | ' lbl '$'], 'log', 'log');
                 plot((1:length(err)) * dt, err);
@@ -85,15 +74,8 @@ else
         dy = dx;        
         %parfor dt_i = 1:N_dt
         for dt_i = 1:N_dt
-            if(draw_evol)
-                [fig_h, ax_h, leg_h] = getFig('x', 'y', 'h(x,y)', '', '', '', 'h');
-                view(-37.5, 30);    
-
-                [fig_v, ax_v, leg_v] = getFig('x', 'y', '$\vec{v}(x,y)$');
-            else
-                ax_h = [];
-                ax_v = [];
-            end
+            [fig_h, ax_h, leg_h, fig_v, ax_v, leg_v, fig_dh, ax_dh, leg_dh] = ...
+                getInitFigs(draw_evol, draw_err);
             disp(['dt_i proc: ' num2str(dt_i/N_dt)]);
             N = round(l/dx) + 1;
             [h, u, v] = get_init_state(N, dx, N, dy, 2);       
@@ -101,7 +83,7 @@ else
             [~, ~, ~, err] = ...
                 evol_sys_to_T_2(g, H, u, v, h,...
                               round(T/dt_arr(dt_i)) + 1, dt_arr(dt_i), dx, dy,...
-                              @step_fwd_walls, @step_center_walls, lbl, ax_h, ax_v,...
+                              @step_fwd_walls, @step_center_walls, lbl, ax_h, ax_v, ax_dh,...
                               @th_cos_solution);
             err_dt(dt_i) = err(end);
             disp([lbl ' : err = ' num2str(err_dt(dt_i))]);

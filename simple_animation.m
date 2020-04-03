@@ -23,20 +23,8 @@ draw_err = 1;
 %% =============== init state ===============
 [h, u, v] = get_init_state(Nx, dx, Ny, dy, 2);
 
-if(draw_evol)
-    [fig_h, ax_h, leg_h] = getFig('x', 'y', 'h(x,y)', '', '', '', 'h');
-    view(-37.5, 30);    
-    
-    if(draw_err)
-        [fig_dh, ax_dh, leg_dh] = getFig('x', 'y', 'dh(x,y)', '', '', '', 'dh');
-        view(-37.5, 30);        
-    end
-    
-    [fig_v, ax_v, leg_v] = getFig('x', 'y', '$\vec{v}(x,y)$');
-else
-    ax_h = [];
-    ax_v = [];
-end
+[fig_h, ax_h, leg_h, fig_v, ax_v, leg_v, fig_dh, ax_dh, leg_dh] = ...
+    getInitFigs(draw_evol, draw_err);
 
 %% =============== evolve =================
 lbl = ['dt = ' num2str(dt) '; dx = ' num2str(dx)];
