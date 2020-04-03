@@ -6,7 +6,7 @@ g = 1;
 l = 2*pi;
 N = 100;
 v0 = sqrt(g * H);
-T_period = 2*pi / v0;
+T_period = l / v0;
 T = T_period * (1 - 1/8);
 %T = 0.1;
 dt = 1e-3;
@@ -23,13 +23,10 @@ N_dx = 0;
 dx_lims = [-1, -2];
 data_path = 'convergence/data';
 
-%Nt = round(T/dt);
-%dx = l/N;
-%dy = l/N;
-%[Y, X] = meshgrid((1:N) * dy, (1:N) * dx);
-
 %% =============== actual work =================
 dt_arr = 10.^linspace(dt_lims(1), dt_lims(2), N_dt);
+dt_arr = [0.003, 0.001, 0.0003];
+T = next_divisible(round(T / min(dt_arr)), lcms([3, 10, 30])) * min(dt_arr);
 dx_arr = 10.^linspace(dx_lims(1), dx_lims(2), N_dx);
 filename = ['T' num2str(T) '_Ndx' num2str(N_dx) '_dxlims' num2str(dx_lims(1)) '-' num2str(dx_lims(2))...
            '_Ndt' num2str(N_dt) '_dtLims' num2str(-dt_lims(1)) '-' num2str(-dt_lims(2)) '.mat'];
@@ -53,7 +50,7 @@ else
             lbl = ['dt = 10^{' num2str(log(dt)/log(10)) '}; dx = 10^{' num2str(log(dx_arr(dx_i))/log(10)) '}'];
             [~, ~, ~, err] = ...
                 evol_sys_to_T_2(g, H, u, v, h,...
-                              round(T/dt) + 1, dt, dx, dy,...
+                              round(T/dt), dt, dx, dy,...
                               @step_fwd_walls, @step_center_walls, lbl, ax_h, ax_v, ax_dh,...
                               @th_cos_solution);
             
@@ -82,7 +79,7 @@ else
             lbl = ['dt = 10^{' num2str(log(dt_arr(dt_i))/log(10)) '}; dx = 10^{' num2str(log(l/N)/log(10)) '}'];
             [~, ~, ~, err] = ...
                 evol_sys_to_T_2(g, H, u, v, h,...
-                              round(T/dt_arr(dt_i)) + 1, dt_arr(dt_i), dx, dy,...
+                              round(T/dt_arr(dt_i)), dt_arr(dt_i), dx, dy,...
                               @step_fwd_walls, @step_center_walls, lbl, ax_h, ax_v, ax_dh,...
                               @th_cos_solution);
             err_dt(dt_i) = err(end);
@@ -113,4 +110,8 @@ end
 if(N_dx > 0)
     getFig('dx', 'err', ['err(dx), T = ' num2str(T)], 'log', 'log');
     plot(dx_arr, err_dx, 'o', 'LineWidth', 2);
+end
+
+function b = next_divisible(a, n)
+    b = a + (n - rem(a,n));
 end
