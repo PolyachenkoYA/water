@@ -1,4 +1,4 @@
-clear; close all;
+%clear; close all;
 
 %% ============== init params =============
 H = 1;
@@ -14,20 +14,20 @@ dt_err_filename = 'err_dt';
 dx_err_filename = 'err_dx';
 
 draw_evol = 0;
-need_to_recomp = 1;
+need_to_recomp = 0;
 draw_err = 1;
 save_res = 1;
-N_dt = 3;
+N_dt = 0;
 dt_lims = [-2.5, -3.5];
-N_dx = 0;
-dx_lims = [-1, -2];
+N_dx = 4;
+dx_lims = [-1, -2.5];
 data_path = 'convergence/data';
 
 %% =============== actual work =================
 dt_arr = 10.^linspace(dt_lims(1), dt_lims(2), N_dt);
 dt_arr = [0.003, 0.001, 0.0003];
 T = next_divisible(round(T / min(dt_arr)), lcms([3, 10, 30])) * min(dt_arr);
-dx_arr = 10.^linspace(dx_lims(1), dx_lims(2), N_dx);
+dx_arr = 10.^linspace(dx_lims(1), dx_lims(2), N_dx)';
 filename = ['T' num2str(T) '_Ndx' num2str(N_dx) '_dxlims' num2str(dx_lims(1)) '-' num2str(dx_lims(2))...
            '_Ndt' num2str(N_dt) '_dtLims' num2str(-dt_lims(1)) '-' num2str(-dt_lims(2)) '.mat'];
 filename = fullfile(pwd, data_path, filename);
@@ -45,7 +45,7 @@ else
             dx = dx_arr(dx_i);
             dy = dx;
             dt = dx / v0 / 3;
-            N = round(l / dx) + 1;
+            N = round(l / dx);
             [h, u, v] = get_init_state(N, dx, N, dy, 2);    
             lbl = ['dt = 10^{' num2str(log(dt)/log(10)) '}; dx = 10^{' num2str(log(dx_arr(dx_i))/log(10)) '}'];
             [~, ~, ~, err] = ...
@@ -74,7 +74,7 @@ else
             [fig_h, ax_h, leg_h, fig_v, ax_v, leg_v, fig_dh, ax_dh, leg_dh] = ...
                 getInitFigs(draw_evol, draw_err);
             disp(['dt_i proc: ' num2str(dt_i/N_dt)]);
-            N = round(l/dx) + 1;
+            N = round(l/dx);
             [h, u, v] = get_init_state(N, dx, N, dy, 2);       
             lbl = ['dt = 10^{' num2str(log(dt_arr(dt_i))/log(10)) '}; dx = 10^{' num2str(log(l/N)/log(10)) '}'];
             [~, ~, ~, err] = ...
@@ -108,7 +108,8 @@ if(N_dt > 0)
 end
 
 if(N_dx > 0)
-    getFig('dx', 'err', ['err(dx), T = ' num2str(T)], 'log', 'log');
+    pfit = polyfit(log(dx_arr), log(err_dx), 1);
+    getFig('dx', 'err', ['err(dx), T = ' num2str(T) '; k = ' num2str(pfit(1))], 'log', 'log');
     plot(dx_arr, err_dx, 'o', 'LineWidth', 2);
 end
 
