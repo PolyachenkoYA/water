@@ -16,7 +16,7 @@ function [h_curr, u_curr, v_curr, err] = ...
     
     [u_curr, v_curr, h_curr] = step_fwd(g, H, u_prev, v_prev, h_prev, dx, dy, dt);
     if(draw_th)
-        h_th = th_solution(Xh, Yh, 1 * dt * v0);
+        h_th = th_solution(Xh, Yh, 1 * dt, v0);
         err(1) = sqrt(sum(sum((h_curr - h_th).^2)) / (Nx * Ny));
     else
         h_th = [];
@@ -35,11 +35,11 @@ function [h_curr, u_curr, v_curr, err] = ...
         [u_curr, v_curr, h_curr, u_prev, v_prev, h_prev] = deal(u_prev, v_prev, h_prev, u_curr, v_curr, h_curr);
 
         if(draw_th)
-            h_th = th_solution(Xh, Yh, i_t * dt * v0);
+            h_th = th_solution(Xh, Yh, i_t * dt, v0);
             err(i_t) = sqrt(sum(sum((h_curr - h_th).^2)) / (Nx * Ny));
         end
 
-        if(mod(i_t, 100) == 0)
+        if(mod(i_t, 10) == 0)
             if(draw_evol)
                 delete(srf);
                 delete(srf_th);

@@ -1,9 +1,9 @@
-%clear; close all;
+clear; close all;
 
 %% ============== init params =============
 H = 1;
 g = 1;
-l = 2*pi;
+l = 2*pi/10;
 N = 100;
 v0 = sqrt(g * H);
 T_period = l / v0;
@@ -14,13 +14,13 @@ dt_err_filename = 'err_dt';
 dx_err_filename = 'err_dx';
 
 draw_evol = 0;
-need_to_recomp = 0;
+need_to_recomp = 1;
 draw_err = 1;
 save_res = 1;
-N_dt = 0;
+N_dt = 3;
 dt_lims = [-2.5, -3.5];
-N_dx = 4;
-dx_lims = [-1, -2.5];
+N_dx = 3;
+dx_lims = [-2, -3];
 data_path = 'convergence/data';
 
 %% =============== actual work =================
