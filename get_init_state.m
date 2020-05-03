@@ -12,7 +12,7 @@ function [state, grid] = get_init_state(mesh, mode)
     switch(mode)
         case 1            
             state.u = exp(-(((grid.Xu - mesh.Lx/8) / (mesh.Lx*10)).^2 + ((grid.Yu - mesh.Ly/2) / (mesh.Ly*10)).^2)) .* ...
-                ((grid.Yu - mesh.dy/2) .* (grid.Xu) .* (grid.Ly - mesh.dy/2 - mesh.Yu) .* max((mesh.Lx/3 - grid.Xu), 0)).^2;
+                ((grid.Yu - mesh.dy/2) .* (grid.Xu) .* (mesh.Ly - mesh.dy/2 - grid.Yu) .* max((mesh.Lx/3 - grid.Xu), 0)).^2;
             state.h = exp(-(((grid.Xh - mesh.Lx/8) / (mesh.Lx/10)).^2 + ((grid.Yh - mesh.Ly/2) / (mesh.Ly/2)).^2)) .* ...
                 ((grid.Yh - mesh.dy/2) .* (grid.Xh - mesh.dx/2) .* (mesh.Ly - mesh.dy/2 - grid.Yh) .* (mesh.Lx - mesh.dx/2 - grid.Xh)).^2;
             
@@ -25,6 +25,6 @@ function [state, grid] = get_init_state(mesh, mode)
     state.u(:, end + 1) = state.u(:, 1);                                     % PBC
     u_forW = (state.u(1:(end-1), 1:(end-1)) + state.u(1:(end-1), 1:(end-1)) + ...
               state.u(2:(end), 1:(end-1)) + state.u(2:(end), 2:(end))) / 4;
-    state.u(:, end + 1) = [];                                                % PBC
+    state.u(:, end) = [];                                                    % PBC
     state.w(2:(end-1), :) = (v(2:(end-1), :) - u_forW .* grid.s) ./ sqrt(1 + grid.s .^2);
 end
