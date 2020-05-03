@@ -1,19 +1,18 @@
-function [Xu, Xw, Xh, Eta_u, Eta_w, Eta_h, Yu, Yw, Yh] = ...
-             get_grid(ys_fnc, Nx, dx, Ny, dy)
-    y0 = dy * Ny;
+function grid = get_grid(mesh)
+    grid.xu = (0:1:(mesh.Nx - 1)) * mesh.dx;
+    grid.eta_u = ((1:1:mesh.Ny) - 1/2) / mesh.Ny;
+    [grid.Xu, grid.Eta_u] = meshgrid(grid.xu, grid.eta_u);    
+    grid.Yu = mesh.y_fnc(grid.Xu, grid.Eta_u);
     
-    xu = (0:1:Nx) * dx;
-    eta_u = ((1:1:Ny) - 1/2) / Ny;
-    [Xu, Eta_u] = meshgrid(xu, eta_u);    
-    Yu = get_y(ys_fnc, Xu, Eta_u, y0);
-    
-    xv = ((1:1:Nx) - 1/2) * dx;
-    eta_v = (0:1:Ny) / Ny;
-    [Xw, Eta_w] = meshgrid(xv, eta_v);
-    Yw = get_y(ys_fnc, Xw, Eta_w, y0);
+    grid.xv = ((1:1:mesh.Nx) - 1/2) * mesh.dx;
+    grid.eta_v = (0:1:mesh.Ny) / mesh.Ny;
+    [grid.Xw, grid.Eta_w] = meshgrid(grid.xv, grid.eta_v);
+    grid.Yw = mesh.y_fnc(grid.Xw, grid.Eta_w);
         
-    xh = ((1:1:Nx) - 1/2) * dx;
-    eta_h = ((1:1:Ny) - 1/2) / Ny;
-    [Xh, Eta_h] = meshgrid(xh, eta_h);
-    Yh = get_y(ys_fnc, Xh, Eta_h, y0);
+    grid.xh = ((1:1:mesh.Nx) - 1/2) * mesh.dx;
+    grid.eta_h = ((1:1:mesh.Ny) - 1/2) / mesh.Ny;
+    [grid.Xh, grid.Eta_h] = meshgrid(grid.xh, grid.eta_h);
+    grid.Yh = mesh.y_fnc(grid.Xh, grid.Eta_h);
+    
+    grid.s = mesh.ys_derv_fnc(grid.Xw(2:(end-1), :)) .* (1 - grid.Eta_w(2:(end-1), :));
 end
