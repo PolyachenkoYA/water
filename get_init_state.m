@@ -1,27 +1,31 @@
-function [h, u, v] = get_init_state(Nx, dx, Ny, dy, mode)    
+function [h, u, w, Xu, Xw, Xh, Eta_u, Eta_w, Eta_h, Yu, Yw, Yh] = ...
+           get_init_state(ys_fnc, ys_derv_fnc, w_lowerB_fnc, w_upperB_fnc, ...
+                          Nx, dx, Ny, dy, mode) 
     u = zeros(Ny, Nx + 1);
     v = zeros(Ny + 1, Nx);
+    w = zeros(Ny + 1, Nx);
+    h = zeros(Ny, Nx);
     lx = Nx * dx;
     ly = Ny * dy;
-
-    [Xu, Yu] = meshgrid((0:1:Nx) * dx, ((1:1:Ny) - 1/2) * dy);
-    [Xv, Yv] = meshgrid(((1:1:Nx) - 1/2) * dx, (0:1:Ny) * dy);
-    [Xh, Yh] = meshgrid(((1:1:Nx) - 1/2) * dx, ((1:1:Ny) - 1/2) * dy);
+    
+    [Xu, Xw, Xh, Eta_u, Eta_w, Eta_h, Yu, Yw, Yh] = ...
+        get_grid(ys_fnc, Nx, dx, Ny, dy);
     
     switch(mode)
         case 1            
-            u = exp(-(((Xu - 2) / 2).^2 + ((Yu - 2) / 1).^2)) .* ...
-                (Yu - dy/2) .* (Xu) .* (ly - dy/2 - Yu) .* (lx - Xu);
-            v = exp(-(((Xv - 2) / 2).^2 + ((Yv - 2) / 1).^2)) .* ...
-                (Yv) .* (Xv - dx/2) .* (ly - Yv) .* (lx - dx/2 - Xv);            
-            h = exp(-(((Xh - 1) / 2).^2 + ((Yh - 2) / 1).^2)) .* ...
-                (Yh - dy/2) .* (Xh - dx/2) .* (ly - dy/2 - Yh) .* (lx - dx/2 - Xh);
+            u = exp(-(((Xu - lx/8) / (lx*10)).^2 + ((Yu - ly/2) / (ly*10)).^2)) .* ...
+                ((Yu - dy/2) .* (Xu) .* (ly - dy/2 - Yu) .* max((lx/3 - Xu),0)).^2;
+            h = exp(-(((Xh - lx/8) / (lx/10)).^2 + ((Yh - ly/2) / (ly/2)).^2)) .* ...
+                ((Yh - dy/2) .* (Xh - dx/2) .* (ly - dy/2 - Yh) .* (lx - dx/2 - Xh)).^2;
             
-            h = h / max(max(h));
-            v = v / max(max(v)) / 2;
-            u = u / max(max(u)) / 3;
-        case 2
-            h = cos(Xh * (2*pi / lx)) + cos(Yh * 2 * (2*pi / ly)); % h(t,x,y) = cos(x) * cos(t * v0) + cos(2y) * cos(2t * v0);
+            h = h / max(h, [], 'all');
+            u = u / max(u, [], 'all') / 3; 
     end
-
+    
+    w(1, :) = w_lowerB_fnc(Xw(1, :));
+    w(end, :) = w_upperB_fnc(Xw(end, :));
+    u_forW = (u(1:(end-1), 1:(end-1)) + u(1:(end-1), 1:(end-1)) + ...
+              u(2:(end), 1:(end-1)) + u(2:(end), 2:(end))) / 4;
+    s = ys_derv_fnc(Xw(2:(end-1), :)) .* (1 - Eta_w(2:(end-1), :));
+    w(2:(end-1), :) = (v(2:(end-1), :) - u_forW .* s) ./ sqrt(1 + s.^2);
 end

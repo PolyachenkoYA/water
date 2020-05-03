@@ -19,11 +19,9 @@ ly = dy * Ny;
 
 draw_evol = 1;
 draw_err = 1;
-x0 = lx / 2;
-y1 = ly / 3;
 
 %% =============== init state ===============
-[h, u, v] = get_init_state(ys_fnc, Nx, dx, Ny, dy, 2);
+[h, u, v] = get_init_state(Nx, dx, Ny, dy, 2);
 
 [fig_h, ax_h, leg_h, fig_v, ax_v, leg_v, fig_dh, ax_dh, leg_dh] = ...
     getInitFigs(draw_evol, draw_err);
