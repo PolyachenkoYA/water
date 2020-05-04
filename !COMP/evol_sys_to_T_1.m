@@ -1,12 +1,12 @@
 function evol = evol_sys_to_T_1(mesh, grid, state_curr, fmt)
     if(fmt.to_draw_err)
-        state_curr.h_th = th_solution(grid.Xh, grid.Yh, 0, mesh.v0);
+        state_curr.h_th = mesh.th_solution(0);
     end    
     evol.err = zeros(mesh.Nt, 1);
     
     if(fmt.to_draw_evol)
         fmt.plots = draw_surf(grid, state_curr, fmt);
-        %input('press any key to start');
+        input('press any key to start');
     end
         
     for i_t = 1:mesh.Nt

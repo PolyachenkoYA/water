@@ -13,6 +13,7 @@ function [mesh, fmt] = get_init
     mesh.T = mesh.Nt * mesh.dt;
     mesh.Lx = mesh.dx * mesh.Nx;
     mesh.Ly = mesh.dy * mesh.Ny;
+    mesh.de = 1 / mesh.Ny;
 
     fmt.to_draw_evol = 1;
     fmt.to_draw_err = 0;
@@ -27,4 +28,6 @@ function [mesh, fmt] = get_init
     mesh.w_lowerBderv_fnc = @(x)get_w_lowerBderv(x);
     mesh.w_upperBderv_fnc = @(x)get_w_upperBderv(x);    
     mesh.y_fnc = @(x, eta)get_y(mesh.ys_fnc, x, eta, mesh.Ly);
+    
+    disp(['sgm = ' num2str(mesh.v0 * mesh.dt / mesh.dx)])
 end

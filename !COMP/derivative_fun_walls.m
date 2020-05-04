@@ -2,9 +2,9 @@ function st = derivative_fun_walls(mesh, grid, state)
     h_per = [state.h(:, end), state.h];
 
 %% =========== u ==========
-    d = -diff1(h_per, 2, 1) / (2 * mesh.dy);
-    d_down = (h_per(end-1,:)*4 - h_per(end,:)*3 - h_per(end-2,:)) / mesh.dy;
-    d_up = (h_per(1,:)*3 + h_per(3,:) - h_per(2,:)*4) / mesh.dy;
+    d = -diff1(h_per, 2, 1) / (2 * mesh.de);
+    d_down = (h_per(end-1,:)*4 - h_per(end,:)*3 - h_per(end-2,:)) / mesh.de;
+    d_up = (h_per(1,:)*3 + h_per(3,:) - h_per(2,:)*4) / mesh.de;
     st.u = zeros(mesh.Ny, mesh.Nx);
     st.u(1, :) = ...
         mesh.g * ...
@@ -26,14 +26,14 @@ function st = derivative_fun_walls(mesh, grid, state)
     st.w = zeros(mesh.Ny + 1, mesh.Nx);
     st.w(2:end-1, :) = mesh.g * ...
         (((d(1:end-1, :) + d(2:end, :)) / 2) .* grid.sw(2:end-1, :) - ...
-        (-diff1(state.h, 1, 1) / mesh.dy) .* (1 + grid.sw(2:end-1, :).^2) .* grid.etaY_w(2:end-1, :));
+        (-diff1(state.h, 1, 1) / mesh.de) .* (1 + grid.sw(2:end-1, :).^2) .* grid.etaY_w(2:end-1, :));
     st.w(1, :) = 0;   % these are not needed since w=0 on both boundaries
     st.w(end, :) = 0;
 
 %% ========== h =============
     st.h = zeros(mesh.Ny, mesh.Nx);
     st.h = -mesh.H * grid.etaY_h .* ...
-               (diff1(state.w, 1, 1) / mesh.dy + ...
+               (diff1(state.w, 1, 1) / mesh.de + ...
                 diff1([state.u, state.u(:, 1)]./ [grid.etaY_u, grid.etaY_u(:, 1)], 1, 2) / mesh.dx);
 end
 
