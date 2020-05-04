@@ -21,7 +21,7 @@ function evol = evol_sys_to_T_1(mesh, grid, state_curr, fmt)
             if(fmt.to_draw_evol)
                 fmt.plots = draw_surf(grid, state_curr, fmt);
                 pause(0.001);
-                input('press any key');
+                %input('press any key');
             end    
             disp([fmt.lbl '; progress ' num2str(i_t / mesh.Nt)]);
         end        
