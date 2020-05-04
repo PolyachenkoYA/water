@@ -3,8 +3,8 @@ function st = derivative_fun_walls(mesh, grid, state)
 
 %% =========== u ==========
     d = -diff1(h_per, 2, 1) / (2 * mesh.de);
-    d_down = (h_per(end-1,:)*4 - h_per(end,:)*3 - h_per(end-2,:)) / mesh.de;
-    d_up = (h_per(1,:)*3 + h_per(3,:) - h_per(2,:)*4) / mesh.de;
+    d_down = (h_per(end-1,:)*4 - h_per(end,:)*3 - h_per(end-2,:)) / (mesh.de * 2);
+    d_up = (h_per(1,:)*3 + h_per(3,:) - h_per(2,:)*4) / (mesh.de * 2);
     st.u = zeros(mesh.Ny, mesh.Nx);
     st.u(1, :) = ...
         mesh.g * ...

@@ -7,7 +7,7 @@ function [mesh, fmt] = get_init
     mesh.Ny = 100;
     mesh.dx = 2 * pi / mesh.Nx;
     mesh.dy = 2 * pi / mesh.Ny;
-    mesh.dt = mesh.dx / mesh.v0 / 3;
+    mesh.dt = min(mesh.dx, mesh.dy) / mesh.v0 / 10;
     mesh.Nt = round(15 * mesh.T_period / mesh.dt) + 1;
 
     mesh.T = mesh.Nt * mesh.dt;
