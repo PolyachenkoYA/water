@@ -1,11 +1,7 @@
 function [h_curr, u_curr, v_curr, err] = ...
     evol_sys_to_T_2(g, H, u_prev, v_prev, h_prev, Nt, dt, dx, dy,...
-                  derivative_fun, prefix, ax_h, ax_v, ax_dh, th_solution)
-    if(exist('ax_h', 'var'))
-        draw_evol = ~isempty(ax_h);
-    else
-        draw_evol = 0;
-    end
+                  step_fwd, step_center, derivative_fun, ...
+                  prefix, figs, draw_evol, th_solution)
     draw_th = exist('th_solution', 'var');
     
     hmax = max(max(h_prev));
