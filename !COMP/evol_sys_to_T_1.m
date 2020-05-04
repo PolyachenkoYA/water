@@ -5,7 +5,7 @@ function evol = evol_sys_to_T_1(mesh, grid, state_curr, fmt)
     evol.err = zeros(mesh.Nt, 1);
     
     if(fmt.to_draw_evol)
-        fmt.plots = draw_surf(grid, state_curr, fmt);
+        fmt.plots = draw_surf(mesh, grid, state_curr, fmt);
         input('press any key to start');
     end
         
@@ -19,7 +19,7 @@ function evol = evol_sys_to_T_1(mesh, grid, state_curr, fmt)
 
         if(mod(i_t, 10) == 0)
             if(fmt.to_draw_evol)
-                fmt.plots = draw_surf(grid, state_curr, fmt);
+                fmt.plots = draw_surf(mesh, grid, state_curr, fmt);
                 pause(0.001);
                 %input('press any key');
             end    

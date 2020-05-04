@@ -10,14 +10,5 @@ function s_curr = step_RK4(mesh, grid, s_curr)
     s_curr.w(1, :) = mesh.w_lowerB_fnc(grid.Xw(1, :));
     s_curr.w(end, :) = mesh.w_upperB_fnc(grid.Xw(end, :));
     
-    % reconstruct v from w and u
-    s_curr.u(:, end+1) = s_curr.u(:, 1);
-    s_curr.v(2:end-1, :) = s_curr.w(2:end-1, :) .* sqrt(1 + grid.sw(2:end-1, :).^2) + ...
-               ((s_curr.u(1:end-1, 1:end-1) + s_curr.u(1:end-1, 2:end) + ...
-                 s_curr.u(2:end, 1:end-1) + s_curr.u(2:end, 2:end)) / 4) .* grid.sw(2:end-1, :);
-    d = (s_curr.u(1, :)*3 - s_curr.u(2, :));
-    s_curr.v(1, :) = (d(1:end-1) + d(2:end)) / 2;
-    d = (s_curr.u(end, :)*3 - s_curr.u(end-1, :));
-    s_curr.v(end, :) = (d(1:end-1) + d(2:end)) / 2;
-    s_curr.u(:, end) = [];
+    s_curr = mesh.restore_v(s_curr);
 end

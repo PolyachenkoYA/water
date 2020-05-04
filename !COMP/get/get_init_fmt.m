@@ -1,5 +1,6 @@
 function fmt = get_init_fmt(mesh, fmt)
     fmt.figs = getInitFigs(fmt);
+    fmt.maxVinit = mesh.maxVinit;
     fmt.lbl = ['dt = ' num2str(mesh.dt) '; dx = ' num2str(mesh.dx)];
     fmt.plots.srf = [];
     fmt.plots.srf_th = [];

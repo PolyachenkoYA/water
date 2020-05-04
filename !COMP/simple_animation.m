@@ -5,14 +5,11 @@ close all;
 [mesh, fmt] = get_init;
 
 %% =============== init state ================
-[state, grid] = get_init_state(mesh, 1);
+[mesh, grid, state] = get_init_state(mesh, 1);
 if(fmt.to_draw_inits)
     draw_inits(mesh, grid, state);
 end
 
-mesh.derivative_fun = @(state)derivative_fun_walls(mesh, grid, state);
-mesh.step_fwd = @(state)step_RK4(mesh, grid, state);
-mesh.th_solution = @(t)th_cos_solution(mesh, grid.Xh, grid.Yh, t);
 fmt = get_init_fmt(mesh, fmt);
 
 %% =============== evolve =================
