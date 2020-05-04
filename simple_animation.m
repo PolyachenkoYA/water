@@ -1,49 +1,25 @@
-clear; close all;
+clear;
+close all;
 
 %% ============== init params =============
-H = 1;
-g = 1;
-v0 = sqrt(g * H);
-T_period = 2*pi / v0;
-Nx = 100;
-Ny = 100;
-dx = 2 * pi / Nx;
-dy = 2 * pi / Ny;
-dt = dx / v0 / 3;
-%dt = 1e-3;
-Nt = round(15 * T_period / dt) + 1;
+[mesh, fmt] = get_init;
 
-T = Nt * dt;
-lx = dx * Nx;
-ly = dy * Ny;
-
-draw_evol = 1;
-draw_err = 1;
-x0 = lx / 2;
-y1 = ly / 3;
-
-%% =============== init state ===============
-[h, u, v] = get_init_state(ys_fnc, Nx, dx, Ny, dy, 2);
-
-[fig_h, ax_h, leg_h, fig_v, ax_v, leg_v, fig_dh, ax_dh, leg_dh] = ...
-    getInitFigs(draw_evol, draw_err);
-
-%% =============== evolve =================
-lbl = ['dt = ' num2str(dt) '; dx = ' num2str(dx)];
-if(draw_err)
-    [h, u, v, err] = ...
-        evol_sys_to_T_1(g, H, u, v, h, Nt, dt, dx, dy,...
-                        @derivative_fun_walls, @step_RK4, lbl,...
-                        ax_h, ax_v, ax_dh, @th_cos_solution);
-else
-   [h, u, v, err] = ...
-       evol_sys_to_T_1(g, H, u, v, h, Nt, dt, dx, dy,...
-                       @derivative_fun_walls, @step_RK4, lbl,...
-                       ax_h, ax_v);    
+%% =============== init state ================
+[state, grid] = get_init_state(mesh, 1);
+if(fmt.to_draw_inits)
+    draw_inits(mesh, grid, state);
 end
 
-if(any(err ~= 0))
-    getFig('t', '$\sqrt{< r^2 >_{x}}$', 'err(t)', 'log', 'log');
-    plot((1:Nt)*dt, err, 'DisplayName', 'error');
-    plot([1, 1] * T_period, [1e-5, max(err) / 2], 'DisplayName', 'period');
+mesh.derivative_fun = @(state)derivative_fun_walls(mesh, grid, state);
+mesh.step_fwd = @(state)step_RK4(mesh, grid, state);
+mesh.th_solution = @(t)th_cos_solution(mesh, grid.Xh, grid.Yh, t);
+fmt = get_init_fmt(mesh, fmt);
+
+%% =============== evolve =================
+evol = evol_sys_to_T_1(mesh, grid, state, fmt);
+
+if(any(evol.err ~= 0))
+    fmt.figs.fig_err_t = getFig('t', '$\sqrt{< r^2 >_{x}}$', 'err(t)', 'log', 'log');
+    plot(fmt.figs.fig_err_t.ax, (1:mesh.Nt) * mesh.dt, evol.err, 'DisplayName', 'error');
+    plot(fmt.figs.fig_err_t.ax, [1, 1] * mesh.T_period, [1e-5, max(evol.err) / 2], 'DisplayName', 'period');
 end

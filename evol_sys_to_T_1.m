@@ -1,57 +1,29 @@
-function [h_curr, u_curr, v_curr, err] = ...
-    evol_sys_to_T_1(g, H, u_curr, v_curr, h_curr, Nt, dt, dx, dy,...
-                  derivative_fun, step_fwd, prefix,...
-                  ax_h, ax_v, ax_dh, th_solution)
-    if(exist('ax_h', 'var'))
-        draw_evol = ~isempty(ax_h);
-    else
-        draw_evol = 0;
-    end
-    draw_th = exist('th_solution', 'var');
-    
-    hmax = max(max(h_curr));
-    [Ny, Nx] = size(h_curr);
-    v0 = sqrt(g * H);
-    [Xh, Yh] = meshgrid(((1:1:Nx) - 1/2) * dx, ((1:1:Ny) - 1/2) * dy);
-    if(draw_th)
-        h_th = th_solution(Xh, Yh, 0, v0);
-    else
-        h_th = [];
-        ax_dh = [];        
+function evol = evol_sys_to_T_1(mesh, grid, state_curr, fmt)
+    if(fmt.to_draw_err)
+        state_curr.h_th = th_solution(grid.Xh, grid.Yh, 0, mesh.v0);
     end    
-    err = zeros(Nt, 1);
+    evol.err = zeros(mesh.Nt, 1);
     
-    if(draw_evol)
-        [srf, v_fld, srf_dh, srf_th, vth_fld] = ...
-            draw_surf(ax_h, ax_v, ax_dh, Nx, dx, Ny, dy,...
-                      u_curr, v_curr, h_curr, hmax, h_th);
+    if(fmt.to_draw_evol)
+        fmt.plots = draw_surf(grid, state_curr, fmt);
         %input('press any key to start');
     end
         
-    for i_t = 1:Nt
-        [u_curr, v_curr, h_curr] = ...
-            step_fwd(derivative_fun, g, H,...
-                     u_curr, v_curr, h_curr, dx, dy, dt);
+    for i_t = 1:mesh.Nt
+        state_curr = mesh.step_fwd(state_curr);
 
-        if(draw_th)
-            h_th = th_solution(Xh, Yh, i_t * dt, v0);
-            err(i_t) = sqrt(sum(sum((h_curr - h_th).^2)) / (Nx * Ny));
+        if(fmt.to_draw_err)
+            state_curr.h_th = mesh.th_solution(i_t * dt);
+            evol.err(i_t) = sqrt(sum(sum((state_curr.h - state_curr.h_th).^2)) / (mesh.Nx * mesh.Ny));
         end
 
-        if(mod(i_t, 1000) == 0)
-            if(draw_evol)
-                delete(srf);
-                delete(srf_th);
-                delete(v_fld);
-                delete(vth_fld);
-                delete(srf_dh);
-                [srf, v_fld, srf_dh, srf_th, vth_fld] = ...
-                    draw_surf(ax_h, ax_v, ax_dh, Nx, dx, Ny, dy,...
-                              u_curr, v_curr, h_curr, hmax, h_th);
+        if(mod(i_t, 10) == 0)
+            if(fmt.to_draw_evol)
+                fmt.plots = draw_surf(grid, state_curr, fmt);
                 pause(0.001);
-                %input('press any key');
+                input('press any key');
             end    
-            disp([prefix '; progress ' num2str(i_t / Nt)]);
+            disp([fmt.lbl '; progress ' num2str(i_t / mesh.Nt)]);
         end        
     end
 end

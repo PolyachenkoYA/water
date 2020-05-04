@@ -29,17 +29,7 @@ mesh.w_upperB_fnc = @(x)get_w_upperB(x);
 mesh.y_fnc = @(x, eta)get_y(mesh.ys_fnc, x, eta, mesh.Ly);
 
 %% =============== tests ================
-grid = get_grid(mesh);
-
-getFig('x', 'y', 'grid');
-surf(grid.Xu, grid.Yu, ones(size(grid.Xu)));
-
 [state, grid] = get_init_state(mesh, 1);
-getFig('x', 'y', 'u(x,y)');
-surf(grid.Xu, mesh.y_fnc(grid.Xu, grid.Eta_u), state.u, 'EdgeColor', 'interp');
-getFig('x', 'y', 'h(x,y)');
-surf(grid.Xh, mesh.y_fnc(grid.Xh, grid.Eta_h), state.h, 'EdgeColor', 'interp');
-getFig('x', 'y', 'w(x,y)');
-surf(grid.Xw, mesh.y_fnc(grid.Xw, grid.Eta_w), state.w, 'EdgeColor', 'interp');
+draw_init(mesh, grid, state);
 
     

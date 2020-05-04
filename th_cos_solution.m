@@ -1,6 +1,4 @@
-function f = th_cos_solution(X, Y, t, v0)
-    [Ny, Nx] = size(X);
-    lx = (X(1,2) - X(1,1)) * Nx;
-    ly = (Y(2,1) - Y(1,1)) * Ny;
-    f = cos(X * (2*pi / lx)) * cos(t * (2*pi*v0 / lx)) + cos(Y * 2 * (2*pi / ly)) * cos(t * 2 * (2*pi*v0 / ly));
+function f = th_cos_solution(mesh, X, Y, t)
+    f = cos(X * (2*pi / mesh.Lx)) * cos(t * (2*pi*mesh.v0 / mesh.Lx)) + ...
+        cos(Y * 2 * (2*pi / mesh.Ly)) * cos(t * 2 * (2*pi*mesh.v0 / mesh.Ly));
 end

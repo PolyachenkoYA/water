@@ -3,7 +3,7 @@
 %                           Nx, dx, Ny, dy, mode) 
 function [state, grid] = get_init_state(mesh, mode)
     state.u = zeros(mesh.Ny, mesh.Nx);
-    v = zeros(mesh.Ny + 1, mesh.Nx);
+    state.v = zeros(mesh.Ny + 1, mesh.Nx);
     state.w = zeros(mesh.Ny + 1, mesh.Nx);
     state.h = zeros(mesh.Ny, mesh.Nx);
     
@@ -18,6 +18,7 @@ function [state, grid] = get_init_state(mesh, mode)
             
             state.h = state.h / max(state.h, [], 'all');
             state.u = state.u / max(state.u, [], 'all') / 3; 
+            state.hmax = 1;
     end
     
     state.w(1, :) = mesh.w_lowerB_fnc(grid.Xw(1, :));
@@ -26,5 +27,6 @@ function [state, grid] = get_init_state(mesh, mode)
     u_forW = (state.u(1:(end-1), 1:(end-1)) + state.u(1:(end-1), 1:(end-1)) + ...
               state.u(2:(end), 1:(end-1)) + state.u(2:(end), 2:(end))) / 4;
     state.u(:, end) = [];                                                    % PBC
-    state.w(2:(end-1), :) = (v(2:(end-1), :) - u_forW .* grid.s) ./ sqrt(1 + grid.s .^2);
+    state.w(2:(end-1), :) = (state.v(2:(end-1), :) - u_forW .* grid.sw(2:end-1,:)) ./ ...
+                                sqrt(1 + grid.sw(2:end-1,:) .^2);
 end
