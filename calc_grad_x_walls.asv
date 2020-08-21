@@ -1,0 +1,10 @@
+function grad_x = calc_grad_x_walls(h,Nx,Ny)
+
+h(   1,:) = h( 2,:);
+h(Nx+1,:) = h(Nx,:);
+
+ip = 3
+
+
+end
+
